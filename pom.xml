@@ -72,6 +72,28 @@
 		<testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals> <goal>single</goal> </goals>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>com.pdfmerge.PdfMergeApplicationKt</mainClass>
+								</manifest>
+							</archive>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
@@ -82,6 +104,7 @@
 					<args>
 						<arg>-Xjsr305=strict</arg>
 						<arg>-Xuse-experimental=kotlin.Experimental</arg>
+						<arg>-include-runtime</arg>
 					</args>
 					<compilerPlugins>
 						<plugin>spring</plugin>
@@ -94,6 +117,33 @@
 						<version>${kotlin.version}</version>
 					</dependency>
 				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>${exec-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>build-native-image</id>
+						<phase>package</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>native-image</executable>
+							<workingDirectory>${project.build.directory}</workingDirectory>
+							<arguments>
+								<argument>-jar</argument>
+								<argument>${project.build.finalName}.jar</argument>
+								<argument>--static</argument>
+<!--								<argument>&#45;&#45;verbose</argument>-->
+<!--								<argument>-H:Name=${project.build.finalName}.</argument>-->
+<!--								<argument>-H:Class=com.pdfmerge.PdfMergeApplicationKt</argument>-->
+
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

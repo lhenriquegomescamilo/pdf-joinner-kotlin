@@ -27,19 +27,22 @@ object AddBookmarkExistingPdfDocument {
     }
 
     private fun processBookmarks(document: PDDocument, filePath: String) {
-        val documentOutline = PDDocumentOutline()
-        document.documentCatalog.documentOutline = documentOutline
-        val pagesOutline = PDOutlineItem()
-        pagesOutline.title = "All Pages"
-        documentOutline.addLast(pagesOutline)
-        for (i in 0 until document.numberOfPages) {
-            createBookmark(document, i, pagesOutline)
+        try {
+            val documentOutline = PDDocumentOutline()
+            document.documentCatalog.documentOutline = documentOutline
+            val pagesOutline = PDOutlineItem()
+            pagesOutline.title = "All Pages"
+            documentOutline.addLast(pagesOutline)
+            for (i in 0 until document.numberOfPages) {
+                createBookmark(document, i, pagesOutline)
+            }
+            pagesOutline.openNode()
+            documentOutline.openNode()
+            document.documentCatalog.pageMode = PageMode.USE_OUTLINES
+            document.save(filePath)
+        } finally {
+            document.close()
         }
-        pagesOutline.openNode()
-        documentOutline.openNode()
-        document.documentCatalog.pageMode = PageMode.USE_OUTLINES
-        document.save(filePath)
-        document.close()
     }
 
     private fun createBookmark(document: PDDocument, i: Int, pagesOutline: PDOutlineItem)  {
