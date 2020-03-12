@@ -16,13 +16,9 @@ import java.io.IOException
  */
 
 fun main(args: Array<String>) {
-//    println("Funcionou!")
-
         System.setProperty("apple.awt.UIElement", "true")
         val merge = PDFMerger()
         merge.merge(args)
-
-
 
 }
 
